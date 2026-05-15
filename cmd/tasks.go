@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"manta/models"
+	"manta/util"
 
 	"github.com/spf13/cobra"
 )
@@ -20,10 +21,10 @@ var tasksCmd = &cobra.Command{
 	Short: "List all uncompleted tasks.",
 	Long: `List all uncompleted tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// fmt.Println("tasks called")
+		tasksPath := util.GetTasksPath()
 
 		// read tasks file
-        content, err := os.ReadFile("tasks.json")
+        content, err := os.ReadFile(tasksPath)
         if err != nil {
             fmt.Println("No tasks found.")
             return
@@ -39,9 +40,10 @@ var tasksCmd = &cobra.Command{
         // print tasks
         fmt.Println("\n### All Tasks ###")
         for index, t := range tasks {
-            fmt.Printf("%d. [%d min] %s: %s (Due: %s)\n", 
-                index + 1, t.Duration, t.Name, t.Description, t.DueDate.Format("2006-01-02"))
+            fmt.Printf("%d. %s: %s (Due: %s, Days Required: %d)\n", 
+                index + 1,  t.Name, t.Description, t.DueDate.Format("2006-01-02"), t.Duration)
         }
+		fmt.Println()
 	},
 }
 

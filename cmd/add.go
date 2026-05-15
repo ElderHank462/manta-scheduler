@@ -7,10 +7,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"time"
 
 	"manta/models"
+	"manta/util"
 
 	"github.com/spf13/cobra"
 )
@@ -21,17 +21,16 @@ var due time.Time
 
 var timeFormats []string = []string{
 	"2006-01-02",
-	"May 15",
 }
 
-func getTasksPath() string {
-	home, _ := os.UserHomeDir()
-	folderpath := filepath.Join(home, ".manta")
+// func getTasksPath() string {
+// 	home, _ := os.UserHomeDir()
+// 	folderpath := filepath.Join(home, ".manta")
 
-	os.MkdirAll(folderpath, 0755)
+// 	os.MkdirAll(folderpath, 0755)
 
-	return filepath.Join(folderpath, "tasks.json")
-}
+// 	return filepath.Join(folderpath, "tasks.json")
+// }
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
@@ -40,7 +39,8 @@ var addCmd = &cobra.Command{
 	Long: `Create a new named task. 
 	
 	Additional tasks attributes can be defined using --desc for description, 
-	--dur for days to complete, and --due for the task's due date.`,
+	--dur for days to complete, and --due for the task's due date (defaults 
+	to one week from time of creation).`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// create the new task object
@@ -51,7 +51,7 @@ var addCmd = &cobra.Command{
             DueDate:     due,
         }
 
-		tasksPath := getTasksPath()
+		tasksPath := util.GetTasksPath()
 
         // load existing tasks
         tasks := []models.Task{}
@@ -78,7 +78,7 @@ var addCmd = &cobra.Command{
 			return
 		}
 
-        if err := os.WriteFile("tasks.json", updatedJSON, 0644); err != nil {
+        if err := os.WriteFile(tasksPath, updatedJSON, 0644); err != nil {
 			fmt.Println("Error writing to json file: ", err)
 			return
 		}
