@@ -37,7 +37,7 @@ var tasksCmd = &cobra.Command{
         }
 
         // print tasks
-        fmt.Println("--- CURRENT TASKS ---")
+        fmt.Println("\n### All Tasks ###")
         for index, t := range tasks {
             fmt.Printf("%d. [%d min] %s: %s (Due: %s)\n", 
                 index + 1, t.Duration, t.Name, t.Description, t.DueDate.Format("2006-01-02"))
