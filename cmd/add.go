@@ -23,15 +23,6 @@ var timeFormats []string = []string{
 	"2006-01-02",
 }
 
-// func getTasksPath() string {
-// 	home, _ := os.UserHomeDir()
-// 	folderpath := filepath.Join(home, ".manta")
-
-// 	os.MkdirAll(folderpath, 0755)
-
-// 	return filepath.Join(folderpath, "tasks.json")
-// }
-
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
@@ -43,11 +34,11 @@ var addCmd = &cobra.Command{
 	to one week from time of creation).`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// create the new task object
+		// create the new task variable
 		newTask := models.Task{
             Name:        args[0],
             Description: desc,
-            Duration:      duration,
+            Duration:    duration,
             DueDate:     due,
         }
 

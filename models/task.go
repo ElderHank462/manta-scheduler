@@ -13,3 +13,9 @@ type Task struct {
 	Duration	int	`json:"duration"`
 	DueDate		time.Time	`json:"due_date"`
 }
+
+// type TaskGroup struct {
+// 	Name	string	`json:"name"`
+// 	Color	string	`json:"color"`
+// 	Tasks	[]Task	`json:"tasks"`
+// }
