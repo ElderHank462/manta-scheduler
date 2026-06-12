@@ -18,6 +18,7 @@ import (
 var desc string
 var duration int
 var due time.Time
+var group int = -1
 
 var timeFormats []string = []string{
 	"2006-01-02",
@@ -40,6 +41,7 @@ var addCmd = &cobra.Command{
             Description: desc,
             Duration:    duration,
             DueDate:     due,
+			Group:		group,
         }
 
 		tasksPath := util.GetTasksPath()

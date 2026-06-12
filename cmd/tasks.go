@@ -22,9 +22,17 @@ var tasksCmd = &cobra.Command{
 	Long: `List all uncompleted tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tasksPath := util.GetTasksPath()
+		groupsPath := util.GetGroupsPath()
 
 		// read tasks file
-        content, err := os.ReadFile(tasksPath)
+        tasksContent, err := os.ReadFile(tasksPath)
+        if err != nil {
+            fmt.Println("No tasks found.")
+            return
+        }
+
+		// read groups file
+        groupsContent, err := os.ReadFile(groupsPath)
         if err != nil {
             fmt.Println("No tasks found.")
             return
@@ -32,16 +40,29 @@ var tasksCmd = &cobra.Command{
 
         // parse tasks
         var tasks []models.Task
-        if err := json.Unmarshal(content, &tasks); err != nil {
+        if err := json.Unmarshal(tasksContent, &tasks); err != nil {
             fmt.Println("Error reading tasks: ", err)
             return
         }
 
+		// parse groups
+		var groups []models.TaskGroup
+		if err := json.Unmarshal(groupsContent, &groups); err != nil {
+			fmt.Println("Error reading task groups: ", err)
+			return
+		}
+
         // print tasks
         fmt.Println("\n### All Tasks ###")
         for index, t := range tasks {
-            fmt.Printf("%d. %s: %s (Due: %s, Days Required: %d)\n", 
-                index + 1,  t.Name, t.Description, t.DueDate.Format("2006-01-02"), t.Duration)
+			groupName := "Ungrouped"	
+			if(t.Group != -1) {
+				myGroup := groups[t.Group]
+				groupName = myGroup.Name
+			}
+
+            fmt.Printf("%d. (%s) %s: %s (Due: %s, Days Required: %d)\n", 
+                index + 1,  groupName, t.Name, t.Description, t.DueDate.Format("2006-01-02"), t.Duration)
         }
 		fmt.Println()
 	},
