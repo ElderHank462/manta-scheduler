@@ -11,6 +11,7 @@ import (
 	"manta/models"
 	"manta/util"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -61,8 +62,14 @@ var tasksCmd = &cobra.Command{
 				groupName = myGroup.Name
 			}
 
-            fmt.Printf("%d. (%s) %s: %s (Due: %s, Days Required: %d)\n", 
-                index + 1,  groupName, t.Name, t.Description, t.DueDate.Format("2006-01-02"), t.Duration)
+			colorPrint := color.New(color.FgRed).PrintfFunc()
+
+            fmt.Printf("%d. ", index + 1)
+			
+			colorPrint("(%s) ", groupName)
+			
+			fmt.Printf("%s: %s (Due: %s, Days Required: %d)\n", 
+                t.Name, t.Description, t.DueDate.Format("2006-01-02"), t.Duration)
         }
 		fmt.Println()
 	},

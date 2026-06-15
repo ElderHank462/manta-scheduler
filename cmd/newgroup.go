@@ -15,7 +15,7 @@ import (
 	// "github.com/fatih/color"
 )
 
-var color string
+var groupColor string
 
 // var colorPalette = [10]{}
 
@@ -35,7 +35,7 @@ to quickly create a Cobra application.`,
 		// create the new taskgroup variable
 		newGroup := models.TaskGroup{
 			Name: args[0],
-			Color: color,
+			Color: groupColor,
 		}
 		
 		// get the path to the json file
@@ -90,5 +90,5 @@ func init() {
 	// newgroupCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	
-	newgroupCmd.Flags().StringVar(&color, "color", "#6038BC", "The color for the group to display with.")
+	newgroupCmd.Flags().StringVar(&groupColor, "color", "#6038BC", "The color for the group to display with.")
 }
