@@ -15,7 +15,7 @@ import (
 	// "github.com/fatih/color"
 )
 
-var groupColor string
+var groupColor string = "#43eb34"
 
 // var colorPalette = [10]{}
 

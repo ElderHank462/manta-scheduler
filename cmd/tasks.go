@@ -57,12 +57,21 @@ var tasksCmd = &cobra.Command{
         fmt.Println("\n### All Tasks ###")
         for index, t := range tasks {
 			groupName := "Ungrouped"	
+			groupColor := "#ff0000"
+			
 			if(t.Group != -1) {
 				myGroup := groups[t.Group]
+				
 				groupName = myGroup.Name
+				groupColor = myGroup.Color
 			}
 
-			colorPrint := color.New(color.FgRed).PrintfFunc()
+			r, g, b, err := util.HexToRGB(groupColor)
+			if err != nil {
+				fmt.Println("Error processing group color: ", err)
+			}
+
+			colorPrint := color.RGB(r, g, b).PrintfFunc()
 
             fmt.Printf("%d. ", index + 1)
 			
