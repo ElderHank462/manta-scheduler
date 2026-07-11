@@ -31,7 +31,7 @@ var tasksCmd = &cobra.Command{
 
 		// read groups file
 		// var groups []models.TaskGroup
-		groups := make(map[string]models.TaskGroup)
+		var groups map[string]models.TaskGroup
 		
         groupsContent, err := os.ReadFile(groupsPath)
         if groupsContent != nil {
