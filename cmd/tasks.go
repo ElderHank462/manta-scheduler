@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -33,11 +30,22 @@ var tasksCmd = &cobra.Command{
         }
 
 		// read groups file
+		// var groups []models.TaskGroup
+		groups := make(map[string]models.TaskGroup)
+		
         groupsContent, err := os.ReadFile(groupsPath)
-        if err != nil {
-            fmt.Println("No tasks found.")
-            return
-        }
+        if groupsContent != nil {
+			if err != nil {
+				fmt.Println("Error reading task groups file: ", err)
+				return
+			}
+
+			// parse groups
+			if err := json.Unmarshal(groupsContent, &groups); err != nil {
+				fmt.Println("Error reading task groups: ", err)
+				return
+			}
+		}
 
         // parse tasks
         var tasks []models.Task
@@ -46,21 +54,17 @@ var tasksCmd = &cobra.Command{
             return
         }
 
-		// parse groups
-		var groups []models.TaskGroup
-		if err := json.Unmarshal(groupsContent, &groups); err != nil {
-			fmt.Println("Error reading task groups: ", err)
-			return
-		}
 
         // print tasks
         fmt.Println("\n### All Tasks ###")
         for index, t := range tasks {
 			groupName := "Ungrouped"	
 			groupColor := "#ff0000"
+
+			value, exists := groups[t.Group]
 			
-			if(t.Group != -1) {
-				myGroup := groups[t.Group]
+			if(exists == true) {
+				myGroup := value
 				
 				groupName = myGroup.Name
 				groupColor = myGroup.Color

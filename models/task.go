@@ -12,5 +12,5 @@ type Task struct {
 	Description	string	`json:"description"`
 	Duration	int	`json:"duration"`
 	DueDate		time.Time	`json:"due_date"`
-	Group		int	`json:"group"`
+	Group		string	`json:"group"`
 }

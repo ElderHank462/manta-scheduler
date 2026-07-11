@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -15,7 +12,7 @@ import (
 	// "github.com/fatih/color"
 )
 
-var groupColor string = "#43eb34"
+var groupColor string
 
 // var colorPalette = [10]{}
 
@@ -32,15 +29,10 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// create the new taskgroup variable
-		newGroup := models.TaskGroup{
-			Name: args[0],
-			Color: groupColor,
-		}
 		
 		// get the path to the json file
 		groupsPath := util.GetGroupsPath()
-
+		
 		// load the task groups from the file
 		groups := []models.TaskGroup{}
 		content, err := os.ReadFile(groupsPath)
@@ -48,13 +40,21 @@ to quickly create a Cobra application.`,
 			if os.IsNotExist(err) {
 				// check if file exists yet, if not create it as an empty json file
 				content = []byte("[]")
-			} else {
-				fmt.Println("Error reading json file: ", err)
-				return
-			}
+				} else {
+					fmt.Println("Error reading json file: ", err)
+					return
+				}
 		}
-
+			
 		json.Unmarshal(content, &groups)
+			
+
+		
+		// create the new taskgroup variable
+		newGroup := models.TaskGroup{
+			Name: args[0],
+			Color: groupColor,
+		}
 
 		// append new task group to the array
 		groups = append(groups, newGroup)

@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -18,7 +15,7 @@ import (
 var desc string
 var duration int
 var due time.Time
-var group int = -1
+var group string = ""
 
 var timeFormats []string = []string{
 	"2006-01-02",
