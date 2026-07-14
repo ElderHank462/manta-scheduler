@@ -9,68 +9,58 @@ import (
 	"manta/util"
 
 	"github.com/spf13/cobra"
-	// "github.com/fatih/color"
 )
 
 var groupColor string
-
-// var colorPalette = [10]{}
 
 
 // newgroupCmd represents the newgroup command
 var newgroupCmd = &cobra.Command{
 	Use:   "newgroup",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Create a new task group.",
+	Long: `Create a new named task group with an optional color. 
+The color is used to display the group in task listings.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		
-		// get the path to the json file
 		groupsPath := util.GetGroupsPath()
 		
-		// load the task groups from the file
-		groups := []models.TaskGroup{}
+		groups := make(map[string]models.TaskGroup)
 		content, err := os.ReadFile(groupsPath)
 		if err != nil {
-			if os.IsNotExist(err) {
-				// check if file exists yet, if not create it as an empty json file
-				content = []byte("[]")
-				} else {
-					fmt.Println("Error reading json file: ", err)
-					return
-				}
+			if !os.IsNotExist(err) {
+				fmt.Println("Error reading json file: ", err)
+				return
+			}
+		} else {
+			if err := json.Unmarshal(content, &groups); err != nil {
+				fmt.Println("Error unmarshaling task groups: ", err)
+				return
+			}
 		}
-			
-		json.Unmarshal(content, &groups)
-			
 
-		
-		// create the new taskgroup variable
 		newGroup := models.TaskGroup{
 			Name: args[0],
 			Color: groupColor,
 		}
 
-		// append new task group to the array
-		groups = append(groups, newGroup)
-		updatedJSON, err := json.MarshalIndent(groups, "", " ")
+		if _, exists := groups[args[0]]; exists {
+			fmt.Printf("Group '%s' already exists.\n", args[0])
+			return
+		}
+
+		groups[args[0]] = newGroup
+		updatedJSON, err := json.MarshalIndent(groups, "", "  ")
 		if err != nil {
 			fmt.Println("Error marshaling to json: ", err)
 			return
 		}
 
-		// write the updated array to the file
 		if err := os.WriteFile(groupsPath, updatedJSON, 0644); err != nil {
 			fmt.Println("Error writing to json file: ", err)
 			return
 		}
 
-		// print output message
 		fmt.Printf("Task group '%s' successfully created!\n", args[0])
 
 	},

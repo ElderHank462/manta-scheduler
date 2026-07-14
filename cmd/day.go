@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var editMode bool
+
 // dayCmd represents the day command
 var dayCmd = &cobra.Command{
 	Use:   "day",
@@ -17,7 +19,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("day called")
+		
+		if editMode {
+			fmt.Println("entering edit mode...")
+		} else {
+			fmt.Println("no edit mode")
+		}
 	},
 }
 
@@ -33,4 +40,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// dayCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	dayCmd.Flags().BoolVarP(&editMode, "edit", "e", false, "Enter edit mode for the day's tasks.")
 }
