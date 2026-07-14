@@ -17,7 +17,7 @@ var assignCmd = &cobra.Command{
 	Short: "Assign a task to a group",
 	Long: `Assign a task to a group. The first argument is the task name, 
 the second argument is the group name.`,
-	Args: cobra.MinimumNArgs(2),
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		taskName := args[0]
 		groupName := args[1]

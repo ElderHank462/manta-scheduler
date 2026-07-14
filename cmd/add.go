@@ -14,7 +14,7 @@ import (
 
 var desc string
 var duration int
-var due time.Time
+var due string
 var group string = ""
 
 var timeFormats []string = []string{
@@ -82,18 +82,10 @@ var addCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 
 	addCmd.Flags().StringVar(&desc, "desc", "No description", "Textual description of the task")
 	addCmd.Flags().IntVar(&duration, "dur", 1, "Days required to complete task")
-	addCmd.Flags().TimeVar(&due, "due", time.Now().AddDate(0, 0, 7), timeFormats, "Due date")
+
+	var defaultTime = time.Now().AddDate(0, 0, 7)
+	addCmd.Flags().StringVar(&due, "due", defaultTime.Format("2006-01-02"), "Due date")
 }
