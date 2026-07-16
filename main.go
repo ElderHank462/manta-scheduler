@@ -1,6 +1,8 @@
 package main
 
-import "manta/cmd"
+import (
+	"manta/cmd"
+)
 
 func main() {
 	cmd.Execute()
