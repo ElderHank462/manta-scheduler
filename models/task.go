@@ -10,5 +10,6 @@ type Task struct {
 	Description	string	`json:"description"`
 	Duration	int	`json:"duration"`
 	DueDate		string	`json:"due_date"`
+	Assigned	string `json:"assigned"`
 	Group		string	`json:"group"`
 }

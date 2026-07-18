@@ -7,6 +7,7 @@ build:
 .PHONY: clean
 clean:
 	rm -f manta
+	rm -r ~/.manta
 
 .PHONY: run
 run: build

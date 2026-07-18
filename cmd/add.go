@@ -15,6 +15,7 @@ import (
 var desc string
 var duration int
 var due string
+var assigned string
 var group string = ""
 
 var timeFormats []string = []string{
@@ -28,17 +29,18 @@ var addCmd = &cobra.Command{
 	Long: `Create a new named task. 
 	
 	Additional tasks attributes can be defined using --desc for description, 
-	--dur for days to complete, and --due for the task's due date (defaults 
-	to one week from time of creation).`,
+	--dur for days to complete, --due for the task's due date (defaults 
+	to one week from time of creation), and --assign for the task's assigned date.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// create the new task variable
 		newTask := models.Task{
-            Name:        args[0],
-            Description: desc,
-            Duration:    duration,
-            DueDate:     due,
-			Group:		group,
+            Name:       	args[0],
+            Description:	desc,
+            Duration:   	duration,
+            DueDate:    	due,
+			Assigned:		assigned,
+			Group:			group,
         }
 
 		tasksPath := util.GetTasksPath()
@@ -88,4 +90,6 @@ func init() {
 
 	var defaultTime = time.Now().AddDate(0, 0, 7)
 	addCmd.Flags().StringVar(&due, "due", defaultTime.Format("2006-01-02"), "Due date")
+
+	addCmd.Flags().StringVar(&assigned, "assign", "", "Assigned date")
 }

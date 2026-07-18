@@ -4,12 +4,14 @@ import (
 	"fmt"
 )
 
-var logo = ` _  _   __   __ _  ____  __  
+const logo = ` _  _   __   __ _  ____  __  
 ( \/ ) / _\ (  ( \(_  _)/ _\ 
 / \/ \/    \/    /  )( /    \
-\_)(_/\_/\_)__) (__)\_/\_/`
+\_)(_/\_/\_/\_)__) (__)\_/\_/`
 
-var headerBounding = "##########"
+const headerBounding = "##########"
+
+const border = "~~~~~~~~~~"
 
 
 func PrintFormattedLn(text string, args ...any) {
@@ -21,9 +23,17 @@ func PrintFormattedLn(text string, args ...any) {
 	}
 }
 
-// func PrintTitle()
+func PrintTitle() {
+	PrintFormattedLn(logo)
+	PrintFormattedLn("Created by Henry Allen in 2026")
+}
+
+func PrintBorder() {
+	PrintFormattedLn("\n" + border + "\n")
+}
 
 func FormatHeader(text string) string {
 	combined := "\n" + headerBounding + " " + text + " " + headerBounding + "\n"
+	// const static = 
 	return combined
 }

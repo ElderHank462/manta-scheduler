@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
+	"manta/models"
 	"manta/util"
 
 	"github.com/spf13/cobra"
@@ -35,15 +37,50 @@ to quickly create a Cobra application.`,
 			fmt.Println("entering edit mode...")
 		} else {
 
+			util.PrintBorder()
+			util.PrintTitle()
+
 			// display date (and unique identifier, random sea creature?)
 			text := util.FormatHeader("Tasks for: " + targetDay)
 
 			util.PrintFormattedLn(text)
 
-			// display tasks, ordered by duration
-			util.PrintFormattedLn("Tasks go here :)")
+			// display DAY'S tasks, ordered by duration
+			tasks := tasksForDate(targetDay)
+			
+			for i := range tasks {
+				task := tasks[i]
+				combined := "%d. %s: %s (Due: %s, Days Required: %d)" 
+
+				util.PrintFormattedLn(combined, i + 1, task.Name, task.Description, task.DueDate, task.Duration)
+			}
+
+			util.PrintBorder()
 		}
 	},
+}
+
+func tasksForDate(dateString string) []models.Task {
+	// if dateTime, err := time.Parse("2006-01-02", dateString); err != nil {
+	// 	fmt.Println("Error reading date: ", err)
+	// }
+
+	base := util.LoadTasks()
+	var trimmed []models.Task
+
+	// trim down to dates
+	for _, task := range base {
+		if task.Assigned == dateString {
+			trimmed = append(trimmed, task)
+		}
+	}
+
+	// sort by duration
+	slices.SortFunc(trimmed, func(a, b models.Task) int {
+		return a.Duration - b.Duration
+	})
+
+	return trimmed
 }
 
 

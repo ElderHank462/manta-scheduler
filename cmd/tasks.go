@@ -81,8 +81,8 @@ var tasksCmd = &cobra.Command{
 			
 			colorPrint("(%s) ", groupName)
 			
-			fmt.Printf("%s: %s (Due: %s, Days Required: %d)\n", 
-                t.Name, t.Description, t.DueDate, t.Duration)
+			fmt.Printf("%s: %s (Due: %s, Assigned: %s, Days Required: %d)\n", 
+                t.Name, t.Description, t.DueDate, t.Assigned, t.Duration)
         }
 		fmt.Println()
 	},
