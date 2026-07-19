@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -11,6 +8,7 @@ import (
 	"manta/models"
 	"manta/util"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -22,26 +20,69 @@ var tasksCmd = &cobra.Command{
 	Long: `List all uncompleted tasks.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tasksPath := util.GetTasksPath()
+		groupsPath := util.GetGroupsPath()
 
 		// read tasks file
-        content, err := os.ReadFile(tasksPath)
+        tasksContent, err := os.ReadFile(tasksPath)
         if err != nil {
             fmt.Println("No tasks found.")
             return
         }
 
+		// read groups file
+		// var groups []models.TaskGroup
+		var groups map[string]models.TaskGroup
+		
+        groupsContent, err := os.ReadFile(groupsPath)
+        if groupsContent != nil {
+			if err != nil {
+				fmt.Println("Error reading task groups file: ", err)
+				return
+			}
+
+			// parse groups
+			if err := json.Unmarshal(groupsContent, &groups); err != nil {
+				fmt.Println("Error reading task groups: ", err)
+				return
+			}
+		}
+
         // parse tasks
         var tasks []models.Task
-        if err := json.Unmarshal(content, &tasks); err != nil {
+        if err := json.Unmarshal(tasksContent, &tasks); err != nil {
             fmt.Println("Error reading tasks: ", err)
             return
         }
 
+
         // print tasks
         fmt.Println("\n### All Tasks ###")
         for index, t := range tasks {
-            fmt.Printf("%d. %s: %s (Due: %s, Days Required: %d)\n", 
-                index + 1,  t.Name, t.Description, t.DueDate.Format("2006-01-02"), t.Duration)
+			groupName := "Ungrouped"	
+			groupColor := "#ff0000"
+
+			value, exists := groups[t.Group]
+			
+			if(exists == true) {
+				myGroup := value
+				
+				groupName = myGroup.Name
+				groupColor = myGroup.Color
+			}
+
+			r, g, b, err := util.HexToRGB(groupColor)
+			if err != nil {
+				fmt.Println("Error processing group color: ", err)
+			}
+
+			colorPrint := color.RGB(r, g, b).PrintfFunc()
+
+            fmt.Printf("%d. ", index + 1)
+			
+			colorPrint("(%s) ", groupName)
+			
+			fmt.Printf("%s: %s (Due: %s, Assigned: %s, Days Required: %d)\n", 
+                t.Name, t.Description, t.DueDate, t.Assigned, t.Duration)
         }
 		fmt.Println()
 	},

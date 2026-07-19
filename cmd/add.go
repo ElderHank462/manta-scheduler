@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -17,20 +14,13 @@ import (
 
 var desc string
 var duration int
-var due time.Time
+var due string
+var assigned string
+var group string = ""
 
 var timeFormats []string = []string{
 	"2006-01-02",
 }
-
-// func getTasksPath() string {
-// 	home, _ := os.UserHomeDir()
-// 	folderpath := filepath.Join(home, ".manta")
-
-// 	os.MkdirAll(folderpath, 0755)
-
-// 	return filepath.Join(folderpath, "tasks.json")
-// }
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
@@ -39,16 +29,18 @@ var addCmd = &cobra.Command{
 	Long: `Create a new named task. 
 	
 	Additional tasks attributes can be defined using --desc for description, 
-	--dur for days to complete, and --due for the task's due date (defaults 
-	to one week from time of creation).`,
+	--dur for days to complete, --due for the task's due date (defaults 
+	to one week from time of creation), and --assign for the task's assigned date.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// create the new task object
+		// create the new task variable
 		newTask := models.Task{
-            Name:        args[0],
-            Description: desc,
-            Duration:      duration,
-            DueDate:     due,
+            Name:       	args[0],
+            Description:	desc,
+            Duration:   	duration,
+            DueDate:    	due,
+			Assigned:		assigned,
+			Group:			group,
         }
 
 		tasksPath := util.GetTasksPath()
@@ -92,18 +84,12 @@ var addCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 
 	addCmd.Flags().StringVar(&desc, "desc", "No description", "Textual description of the task")
 	addCmd.Flags().IntVar(&duration, "dur", 1, "Days required to complete task")
-	addCmd.Flags().TimeVar(&due, "due", time.Now().AddDate(0, 0, 7), timeFormats, "Due date")
+
+	var defaultTime = time.Now().AddDate(0, 0, 7)
+	addCmd.Flags().StringVar(&due, "due", defaultTime.Format("2006-01-02"), "Due date")
+
+	addCmd.Flags().StringVar(&assigned, "assign", "", "Assigned date")
 }
