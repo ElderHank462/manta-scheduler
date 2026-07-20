@@ -25,7 +25,7 @@ func PrintFormattedLn(text string, args ...any) {
 
 func PrintTitle() {
 	PrintFormattedLn(logo)
-	PrintFormattedLn("Created by Henry Allen in 2026")
+	PrintFormattedLn("(Created by Henry Allen)")
 }
 
 func PrintBorder() {

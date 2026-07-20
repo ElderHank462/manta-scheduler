@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"slices"
+	"strings"
 	"time"
 
 	"manta/models"
@@ -35,47 +38,97 @@ to quickly create a Cobra application.`,
 		
 		if editMode {
 			fmt.Println("entering edit mode...")
+			// list assigned tasks
+			util.PrintBorder()
+			util.PrintTitle()
+
+
+			tasks := tasksForDate(targetDay)
+			printTasks(tasks, targetDay)
+
+			util.PrintFormattedLn("Available commands: q (quit), a (assign), r (remove), s (search)")
+
+			util.PrintBorder()
+			
+			scanner := bufio.NewScanner(os.Stdin)
+			
+			// input loop
+			for {
+				// display commands
+				util.PrintFormattedLn("Enter a command...")
+	
+				// listen for input
+				fmt.Print(":")
+				if !scanner.Scan() {
+					break
+				}
+	
+				// process input
+				input := strings.TrimSpace(scanner.Text())
+
+				switch input {
+					case "q":
+						util.PrintFormattedLn("Quitting edit mode...")
+						return
+					case "x":
+						util.PrintFormattedLn("Cancelled command")
+					case "a":
+						util.PrintFormattedLn("assign called")
+					case "r":
+						util.PrintFormattedLn("remove called")
+					case "s":
+						util.PrintFormattedLn("search called")
+				}
+
+			}
+
+
+
 		} else {
 
 			util.PrintBorder()
 			util.PrintTitle()
 
-			// display date (and unique identifier, random sea creature?)
-			text := util.FormatHeader("Tasks for: " + targetDay)
 
-			util.PrintFormattedLn(text)
 
-			// display DAY'S tasks, ordered by duration
 			tasks := tasksForDate(targetDay)
 			
-			for i := range tasks {
-				task := tasks[i]
-				combined := "%d. %s: %s (Due: %s, Days Required: %d)" 
-
-				util.PrintFormattedLn(combined, i + 1, task.Name, task.Description, task.DueDate, task.Duration)
-			}
+			printTasks(tasks, targetDay)
 
 			util.PrintBorder()
 		}
 	},
 }
 
+func printTasks(tasks []models.Task, targetDay string) {
+	// display date (and unique identifier, random sea creature?)
+	text := util.FormatHeader("Tasks for: " + targetDay)
+
+	util.PrintFormattedLn(text)
+
+	if len(tasks) == 0 {
+		util.PrintFormattedLn("No tasks assigned for %s", targetDay)
+	} else {
+		for i := range tasks {
+			task := tasks[i]
+			combined := "%d. %s: %s (Due: %s, Days Required: %d)" 
+	
+			util.PrintFormattedLn(combined, i + 1, task.Name, task.Description, task.DueDate, task.Duration)
+		}
+	}
+}
+
 func tasksForDate(dateString string) []models.Task {
-	// if dateTime, err := time.Parse("2006-01-02", dateString); err != nil {
-	// 	fmt.Println("Error reading date: ", err)
-	// }
 
 	base := util.LoadTasks()
 	var trimmed []models.Task
 
-	// trim down to dates
 	for _, task := range base {
 		if task.Assigned == dateString {
 			trimmed = append(trimmed, task)
 		}
 	}
 
-	// sort by duration
 	slices.SortFunc(trimmed, func(a, b models.Task) int {
 		return a.Duration - b.Duration
 	})
