@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -44,7 +45,11 @@ to quickly create a Cobra application.`,
 
 
 			tasks := tasksForDate(targetDay)
-			printTasks(tasks, targetDay)
+
+			text := util.FormatHeader("Tasks for: " + targetDay)
+			util.PrintFormattedLn(text)
+
+			printTasks(tasks)
 
 			util.PrintFormattedLn("Available commands: q (quit), a (assign), r (remove), s (search)")
 
@@ -92,48 +97,132 @@ to quickly create a Cobra application.`,
 
 
 			tasks := tasksForDate(targetDay)
-			
-			printTasks(tasks, targetDay)
+
+			text := util.FormatHeader("Tasks for: " + targetDay)
+			util.PrintFormattedLn(text)
+
+			if len(tasks) == 0 {
+				util.PrintFormattedLn("No tasks assigned for %s", targetDay)
+			} else {
+				printTasks(tasks)
+			}
+
 
 			util.PrintBorder()
 		}
 	},
 }
 
-func printTasks(tasks []models.Task, targetDay string) {
+func printTasks(tasks []models.Task) {
 	// display date (and unique identifier, random sea creature?)
-	text := util.FormatHeader("Tasks for: " + targetDay)
-
-	util.PrintFormattedLn(text)
-
-	if len(tasks) == 0 {
-		util.PrintFormattedLn("No tasks assigned for %s", targetDay)
-	} else {
-		for i := range tasks {
-			task := tasks[i]
-			combined := "%d. %s: %s (Due: %s, Days Required: %d)" 
 	
-			util.PrintFormattedLn(combined, i + 1, task.Name, task.Description, task.DueDate, task.Duration)
-		}
+	for i := range tasks {
+		task := tasks[i]
+		combined := "%d. %s: %s (Due: %s, Days Required: %d)" 
+
+		util.PrintFormattedLn(combined, i + 1, task.Name, task.Description, task.DueDate, task.Duration)
 	}
+
 }
 
 func tasksForDate(dateString string) []models.Task {
 
 	base := util.LoadTasks()
-	var trimmed []models.Task
+	var filtered []models.Task
 
 	for _, task := range base {
 		if task.Assigned == dateString {
-			trimmed = append(trimmed, task)
+			filtered = append(filtered, task)
 		}
 	}
 
-	slices.SortFunc(trimmed, func(a, b models.Task) int {
+	slices.SortFunc(filtered, func(a, b models.Task) int {
 		return a.Duration - b.Duration
 	})
 
-	return trimmed
+	return filtered
+}
+
+func filterTasksByAssignment(filter string) []models.Task {
+	base := util.LoadTasks()
+	var filtered []models.Task
+
+	for _, task := range base {
+		if task.Assigned == filter {
+			filtered = append(filtered, task)
+		}
+	}
+
+	return filtered
+}
+
+func assign(date string) {
+	// filter list of tasks by assigned=""
+	tasks := filterTasksByAssignment("")
+
+	slices.SortFunc(tasks, func(a, b models.Task) int {
+		dateA, err := time.Parse("2006-01-02", a.DueDate)
+		if err != nil {
+			return 0 // suppress
+		}
+
+		dateB, err := time.Parse("2006-01-02", b.DueDate)
+		if err != nil {
+			return 0 // suppress
+		}
+
+		if dateA.Before(dateB) {
+			return -1
+		} else if dateA.Equal(dateB) {
+			return 0
+		} else {
+			return 1
+		}
+
+	})
+
+	// display list (numbered)
+	printTasks(tasks)
+
+
+	// prompt for index
+	scanner := bufio.NewScanner(os.Stdin)
+	assignIndex := -1
+
+	for {
+		fmt.Print("Specify a task's number to assign it: ")
+
+		if !scanner.Scan() {
+			break
+		}
+	
+		// process input
+		input := strings.TrimSpace(scanner.Text())
+
+		if strings.ToLower(input) == "x" {
+			util.PrintFormattedLn("Cancelled task assignment")
+			break
+		}
+
+		n, err := strconv.Atoi(input)
+		if err != nil || n <= 0 {    // <- rejects non-integers AND zero/negative values
+			fmt.Println("Please enter a valid positive number")
+		} else {
+			assignIndex = n
+			break
+		}
+	}
+
+	if assignIndex == -1 {
+		return
+	} else {
+		// assign index and return
+		assigned := tasks[assignIndex-1]
+
+		assigned.Assigned = date
+		return
+	}
+
 }
 
 
