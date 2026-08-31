@@ -2,6 +2,8 @@ package util
 
 import (
 	"fmt"
+
+	"github.com/fatih/color"
 )
 
 const logo = ` _  _   __   __ _  ____  __  
@@ -36,4 +38,16 @@ func FormatHeader(text string) string {
 	combined := "\n" + headerBounding + " " + text + " " + headerBounding + "\n"
 	// const static = 
 	return combined
+}
+
+func PrintColor(hex string, text string) {
+	r, g, b, err := HexToRGB(hex)
+	if err != nil {
+		fmt.Println("Error processing group color: ", err)
+	}
+
+	colorPrint := color.RGB(r, g, b).PrintfFunc()
+
+
+	colorPrint(text)
 }

@@ -98,13 +98,19 @@ to quickly create a Cobra application.`,
 
 			tasks := tasksForDate(targetDay)
 
-			text := util.FormatHeader("Tasks for: " + targetDay)
-			util.PrintFormattedLn(text)
+			completed := filterTasksByCompletion(true, tasks)
+			incomplete := filterTasksByCompletion(false, tasks)
 
+			title := util.FormatHeader("Tasks for: " + targetDay)
+			completed_header := util.FormatHeader("Already completed:")
+			
 			if len(tasks) == 0 {
 				util.PrintFormattedLn("No tasks assigned for %s", targetDay)
 			} else {
-				printTasks(tasks)
+				util.PrintFormattedLn(title)
+				printTasks(incomplete)
+				util.PrintFormattedLn(completed_header)
+				printTasks(completed)
 			}
 
 
@@ -119,6 +125,8 @@ func printTasks(tasks []models.Task) {
 	for i := range tasks {
 		task := tasks[i]
 		combined := "%d. %s: %s (Due: %s, Days Required: %d)" 
+
+		
 
 		util.PrintFormattedLn(combined, i + 1, task.Name, task.Description, task.DueDate, task.Duration)
 	}
@@ -156,6 +164,23 @@ func filterTasksByAssignment(filter string) []models.Task {
 	return filtered
 }
 
+func filterTasksByCompletion(filter bool, base []models.Task) []models.Task {
+	if base == nil {
+		base = util.LoadTasks()
+	}
+
+	var filtered []models.Task
+
+	for _, task := range base {
+		if task.Completed == filter {
+			filtered = append(filtered, task)
+		}
+	}
+
+	return filtered
+}
+
+// Function to handle the assign command within edit mode
 func assign(date string) {
 	// filter list of tasks by assigned=""
 	tasks := filterTasksByAssignment("")

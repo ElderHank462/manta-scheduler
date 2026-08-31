@@ -8,7 +8,6 @@ import (
 	"manta/models"
 	"manta/util"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -70,16 +69,10 @@ var tasksCmd = &cobra.Command{
 				groupColor = myGroup.Color
 			}
 
-			r, g, b, err := util.HexToRGB(groupColor)
-			if err != nil {
-				fmt.Println("Error processing group color: ", err)
-			}
-
-			colorPrint := color.RGB(r, g, b).PrintfFunc()
-
             fmt.Printf("%d. ", index + 1)
-			
-			colorPrint("(%s) ", groupName)
+
+			groupText := "(" + groupName + ") "
+			util.PrintColor(groupColor, groupText)
 			
 			fmt.Printf("%s: %s (Due: %s, Assigned: %s, Days Required: %d)\n", 
                 t.Name, t.Description, t.DueDate, t.Assigned, t.Duration)
